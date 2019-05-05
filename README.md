@@ -43,7 +43,7 @@ So now `x` holds the entire contents of test.ft.txt.
 ```python
 len(x)
 ```
-`177376193       `      That's a lot!  Well, what does this data look like?
+`177376193                `      That's a lot!  Well, what does this data look like?
 
 
 ```python
