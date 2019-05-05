@@ -108,7 +108,9 @@ for i in range(5):
 Great.  We've got `labels` and `reviews` separated.  Now let's start talking about what to do with these sets.
 
 # Bag-of-Words Models
-A bag-of-words model is one in which each input (in our case, each review) is first reduced to an unordered set of the words which occur within the input.  For example, the reviews "Great product but the customer service was terrible" and "Terrible product but the customer service was great" have exactly the same bag-of-words reductions (the set {'but', 'customer', 'great', 'product', 'service', 'terrible', 'the', 'was'}), even though the sentiments are very different.  Even though this bag-of-words idea is terribly naive, it works relatively well.  Good reviews will have more positive words in them and bad reviews will have more negative words in them.  Moreover there are some negative words which don't often show up in positive reviews at all, and vice-versa.  
+A bag-of-words model is one in which each input (in our case, each review) is first reduced to an unordered set of the words which occur within the input.  For example, the reviews "Great product but the customer service was terrible" and "Terrible product but the customer service was great" have exactly the same bag-of-words reductions ( the set {'but', 'customer', 'great', 'product', 'service', 'terrible', 'the', 'was'} ), even though the sentiments are very different.  Even though this bag-of-words idea is terribly naive, it works relatively well.  Good reviews will have more positive words in them and bad reviews will have more negative words in them.  Moreover there are some negative words which don't often show up in positive reviews at all, and vice-versa.  
+
+By the way, this is the reason that above, when we were splitting our data into labels and reviews, I mentioned the idea of also separating out the titles.  A bag-of-words reduction of a review title is much less likely to lose much information, and important keywords like 'great' and 'terrible' are less likely to be lost in the noise of a giant bag of words.  We will revisit this idea later, and in particular we'll create a model out of two smaller models - one trained on titles and one trained on review texts.  This model will work by first trying to classify the review based on title alone, and if it returns a label with very high confidence, we use that answer; otherwise we look at the review text.  This separation of one feature into two is a form of 'feature engineering' and is a common practice in real-world classification and regression tasks.
 
 Our first sentiment analyzer will be a bag-of-words model.  We'll need to process our feature set in various important ways:
  - We'll need to 'tokenize' each review down to constituent words.
@@ -118,7 +120,7 @@ Our first sentiment analyzer will be a bag-of-words model.  We'll need to proces
  - We may be interested in tagging the part of speech of each word, or in identifying certain commonly-occurring groupings of parts of speech such as an 'adverb-verb' pair or an 'adjective-noun' pair.  We won't do this in this project, but we point it out as a possibility because NLTK has powerful built-in tools for doing all sorts of tagging of this form.
  - Finally, we'll want to loop through our `reviews` set and for each review output a bag-of-words representation of that review.
  
- Let's get to it.
+Let's get to it.
  
  
 
