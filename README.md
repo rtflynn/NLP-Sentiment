@@ -12,7 +12,6 @@ Finally, a quick note on the style of this writeup:  It's not so much a tutorial
 
 ## Topics Covered
 We'll be covering the following topics in varied amounts of detail:
-  - Finding data sets to play with + putting them in an appropriate format for the various ML packages we'll use
   - NLTK (The Natural Language Toolkit for Python)
   - Word tokenizing techniques
   - Preprocessing training data for NLP
@@ -93,9 +92,9 @@ Go ahead and check that things look correct:  `labels` and `reviews` are both py
 ```python
 for i in range(len(labels)):
   if labels[i] == '__label__1':
-    labels[i] = 'bad'
+    labels[i] = 'Bad'
   elif labels[i] == '__label__2':
-    labels[i] = 'good'
+    labels[i] = 'Good'
   else:
     print("uh oh")
 
@@ -121,8 +120,96 @@ Our first sentiment analyzer will be a bag-of-words model.  We'll need to proces
  - Finally, we'll want to loop through our `reviews` set and for each review output a bag-of-words representation of that review.
  
 Let's get to it.
+
+## Preparing the features
  
+ ```python
+ from nltk.tokenize import word_tokenize, RegexpTokenizer
  
+ print(word_tokenize(reviews[0]))
+ reTokenizer = RegexpTokenizer(r'\w+')
+ print(reTokenizer.tokenize(reviews[0]))  
+ ```
+
+If you run the above lines, you'll see that word_tokenize separates the review into a list of words, but considers punctuation as words.  This might be desirable for some sorts of models (for example, an attention model may learn to look at what comes before an exclamation mark or a set of ellipses), but for a bag-of-words model it seems like punctuation will simply add noise.  
+
+A RegexpTokenizer can be built to tokenize according to any regular expression you hand it.  The regular expression `r'\w+'` matches any pattern consisting of one or more consecutive letters, so works fine for our purposes.  Note that this matcher will miss certain things like Ph.D. (i.e. it'll tokenize this as two words) and hyphenated words and contractions, but it should still work fine for our task.  We'll use the RegexpTokenizer going forward.
+
+Now let's work on getting everything stemmed and in lowercase.
+
+```python
+ from nltk.stem import PorterStemmer
+ 
+ ps = PorterStemmer()
+ temp = reTokenizer.tokenize(reviews[0])
+ for i in range(10):
+  print(ps.stem( temp[i].lower() ))
+```
+
+OK... lots of information has been lost by stemming.  Let's try lemmatizing instead:
+```python
+from nltk.stem import WordNetLemmatizer
+
+lemmatizer = WordNetLemmatizer()
+temp = reTokenizer.tokenize(reviews[0])
+for i in range(10):
+  print(lemmatizer.lemmatize( temp[i].lower() ))
+
+```
+
+Better.  Let's use this.  Finally, we need to collect all the words from all the reviews into one list and keep the 3000 most common words as our bag-of-words vocabulary.
+
+```python
+all_words = []
+for review in reviews:
+  for word in reTokenizer.tokenize(review):
+    lowercase = word.lower()
+    lemmatized = lemmatizer.lemmatize( lowercase )
+    all_words.append(lemmatized)
+```
+
+All our words are in the list `all_words`.  NLTK conveniently provides functionality for extracting the most common words from a list.
+    
+```python    
+from nltk import FreqDist
+
+all_words = FreqDist(all_words)
+most_common_words = all_words.most_common(3000)
+word_features = []
+for w in most_common_words:
+  word_features.append(w[0])
+```
+
+`all_words` is now a python list of tuples like `('good', 32655)` if the word 'good' happens to have appeared 32655 times in our data.  This list consists of the 3000 most common words and they're sorted in order of most- to least- frequent.  We collect all the words into our `word_features` list.  We can now iterate through each review in `reviews` and create a vector of 1's and 0's for a given review depending on which words from our chosen 3000 show up in that review.  However we should think ahead a little --- what ML algorithm will we use, and what format does it prefer its data in?
+
+NLTK includes some classifiers off the shelf, so let's keep things simple and use one of those.  We'll use the `nltk.NaiveBayesClassifier()` for now.  Naive Bayes is, as the name suggests, quite a naive method.  It simply correlates individual words with probability distributions for labels, so that (for instance) the word 'good' might correlate to a probability distribution like  90% 'Good', 10% 'Bad' .  It does this in a manner which treats all word occurences as independent from one another.  A consequence is the fact that the word 'not' has an associated label distribution which only has to do with how many times the word 'not' shows up in positive vs. negative reviews.  A naive Bayes classifier will never, ever be able to understand the phrase 'not good' to mean 'bad'.  But if you think about it, this is the perfect classifier to use with a bag-of-words model, since we've already thrown away all the interconnections between the words anyway!  
+
+It's good that we've decided on which classifier to use, because now we know what format it wants its training data in.  Looking at the documentation real quick (or looking directly at the code for nltk.NaiveBayesClassifier()), we see that it wants its training data to be packaged as a python list of ordered pairs (feature_dict, label), where `feature_dict` is a dictionary with (key, value) pairs of the form ('some_word', 0 or 1).
+
+```python
+def make_feature_dict(word_list):
+  feature_dict = {}
+  for w in word_features:
+    if w in word_list:
+      feature_dict[w] = 1
+    else:
+      feature_dict[w] = 0
+    return feature_dict
+
+
+nltk_data_set = []
+for i in range(len(labels)):
+  nltk_data_set.append( (make_feature_dict(reviews[i]), labels[i] )
+
+train_proportion = 0.9
+train_set_size = int(train_proportion * len(labels))
+
+training_set = nltk_data_set[:train_set_size]
+testing_set = nltk_data_set[train_set_size:]
+```
+
+## Training and Testing the Model
+
 
 
 
