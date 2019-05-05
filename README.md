@@ -24,10 +24,28 @@ We'll be covering the following topics in varied amounts of detail:
  
  
 ## Preliminary:
-I'm using the Amazon Reviews data set which can be found at https://www.kaggle.com/bittlingmayer/amazonreviews .  You'll want to click the download button, unzip the downloaded file, and then unzip the files within the newly unzipped file (7-zip if you get stuck).  You'll want test.ft.txt and train.ft.txt in the same folder as LSTM.py.  You'll notice that these data sets are very large!  In fact, the training set has 400,000 training examples, so while we're playing around with different models it suffices to take some subset of train.ft.txt as our full train/test/validation set.
+I'm using the Amazon Reviews data set which can be found at https://www.kaggle.com/bittlingmayer/amazonreviews .  You'll want to click the download button, unzip the downloaded file, and then unzip the files within the newly unzipped file (7-zip if you get stuck).  You'll want test.ft.txt and train.ft.txt in the same folder as LSTM.py.  You'll notice that these data sets are very large!  In fact, the training set has 400,000 training examples, so while we're playing around with different models it suffices to take some subset of train.ft.txt as our full train/test/validation set.  
 
+We're using Python 3 throughout  (Version 3.6.5 to be specific).
 
 # Getting Started
+Open a command prompt, navigate to the folder containing train.ft.txt, and type 'python'.  We first want to get a feel for the data:
+
+'''python
+current_file = open("test.ft.txt", "rb")
+x = current_file.read()                     
+current_file.close()
+'''
+
+So now 'x' holds the entire contents of test.ft.txt.
+```python
+len(x)
+```
+```
+177376193
+```
+
+
 
 
 
