@@ -23,7 +23,7 @@ We'll be covering the following topics in varied amounts of detail:
  
  
 ## Preliminary:
-I'm using the Amazon Reviews data set which can be found at https://www.kaggle.com/bittlingmayer/amazonreviews .  You'll want to click the download button, unzip the downloaded file, and then unzip the files within the newly unzipped file (7-zip if you get stuck).  You'll want test.ft.txt and train.ft.txt in the same folder as LSTM.py.  You'll notice that these data sets are very large!  In fact, the testingg set has 400,000 training examples, so while we're playing around with different models it suffices to take some subset of test.ft.txt as our full train/test/validation set.  
+I'm using the Amazon Reviews data set which can be found at https://www.kaggle.com/bittlingmayer/amazonreviews .  You'll want to click the download button, unzip the downloaded file, and then unzip the files within the newly unzipped file (7-zip if you get stuck).  You'll want test.ft.txt and train.ft.txt in the same folder as LSTM.py.  You'll notice that these data sets are very large!  In fact, the testing set has 400,000 training examples, so while we're playing around with different models it suffices to take some subset of test.ft.txt as our full train/test/validation set.  
 
 All the data in train.ft.txt and test.ft.txt files has already been shuffled.
 
