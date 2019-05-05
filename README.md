@@ -29,15 +29,15 @@ I'm using the Amazon Reviews data set which can be found at https://www.kaggle.c
 We're using Python 3 throughout  (Version 3.6.5 to be specific).
 
 # Getting Started
-Open a command prompt, navigate to the folder containing train.ft.txt, and type 'python'.  We first want to get a feel for the data:
+Open a command prompt, navigate to the folder containing train.ft.txt, and type `python`.  We first want to get a feel for the data:
 
-'''python
+```python
 current_file = open("test.ft.txt", "rb")
 x = current_file.read()                     
 current_file.close()
-'''
+```
 
-So now 'x' holds the entire contents of test.ft.txt.
+So now `x` holds the entire contents of test.ft.txt.
 ```python
 len(x)
 ```
