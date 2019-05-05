@@ -29,6 +29,7 @@ All the data in train.ft.txt and test.ft.txt files has already been shuffled.
 
 We're using Python 3 throughout  (Version 3.6.5 to be specific).
 
+
 # Getting Started: Data Formatting
 Open a command prompt, navigate to the folder containing train.ft.txt, and type `python`.  We first want to get a feel for the data:
 
@@ -55,8 +56,12 @@ OK.  Mostly english text... some excape characters like `\'` and `\n`... a myste
 Well, this is because `x` is being read as a so-called byte-literal instead of as a string.  Let's fix this before splitting:
 
 ```python
-x = x.decode("utf-8")       # now type(x) tells us that x is a string
+x = x.decode("utf-8")       # now type(x) tells us that x is a string.  
 x = x.splitlines()
+
+##### OPTIONAL  but recommended for quick iteration  #####
+##### x = x[:10000]                                  #####
+#####                                                #####
 ```
 
 Good.  Now `x` is a list of strings.  Let's look into it a bit more:
@@ -124,6 +129,7 @@ Let's get to it.
 ## Preparing the features
  
  ```python
+ import nltk
  from nltk.tokenize import word_tokenize, RegexpTokenizer
  
  print(word_tokenize(reviews[0]))
@@ -209,9 +215,25 @@ testing_set = nltk_data_set[train_set_size:]
 ```
 
 ## Training and Testing the Model
+Believe it or not, we're done with the hard part.  All that's left is to instantiate a classifier, train it, and see how it does on the test set after training.  This will take a while if the optional line of code  `x = x[:10000]` was ommitted at the beginning of the project.
 
 
+```python
+print("Beginning classifier training...")
+classifier = nltk.NaiveBayesClassifier.train(training_set)
+print("Finished classifier training... its accuracy on the testing set is: ")
+print(nltk.classify.accuracy(classifier, testing_set))
 
+print("The most informative features were: ")
+classifier.show_most_informative_features(30)
+```
+
+And there you have it.  
+
+I'd originally planned on discussing how to get nltk and scikit-learn working together --- and may do so on some future update to this project.  For now, however, let's move on to LSTM models.
+
+# Sequential Models
+Bag-of-words works better than one might expect, but blah blah etc 
 
 
 
