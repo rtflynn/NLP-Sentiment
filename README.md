@@ -19,7 +19,7 @@ We'll be covering the following topics in varied amounts of detail:
   - Building and training models using Scikit-Learn
   - RNN (specifically, LSTM)
   - Building and training models using Keras
-  - Parameter searching using Talos
+  - Hyperparameter searching using Talos
  
  
 ## Preliminary:
