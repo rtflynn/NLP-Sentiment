@@ -294,7 +294,7 @@ Similarly, one might take the word embedding for 'king', subtract the word embed
 
 In any case, our model will look like:  Embedding Layer -->  LSTM Cell --> Single Unit (sigmoid) .
 
-# Preparing the Features
+## Preparing the Features
 
 We'll need to prepare our features in a different format for Keras.  For one thing, Keras models need numpy arrays to be passed to them.  For another, since our embedding layer will take care of word similarity, we may want to revisit whether we lemmatize or not.  It may well be the case that the particular form of a word changes the meaning of the sentence it's in enough to matter, so we should experiment both with and without lemmatizing our input.
 
@@ -374,16 +374,30 @@ for rev in reviews:
   lstm_input.append(np.asarray(review2intlist(rev), dtype=int))
 lstm_input = sequence.pad_sequences(lstm_input, maxlen=max_length)
 
-
 train_proportion = 0.9
-train_set_size = int(train_proportion * len(labels))
+train_size = int(train_proportion * len(labels))
 
-training_set = lstm_input[:train_set_size]
-testing_set = lstm_input[train_set_size:]
+x_train, y_train = lstm_input[:train_size], labels[:train_size]
+x_test, y_test = lstm_input[train_size:], labels[train_size:]
 ```
 
+## Building the Model
 
+Building a Keras model is a pretty straightforward process.  We'll use the Sequential API because it's simpler we don't need the flexibility of the functional API.  Most of the following code should be easy enough to parse for meaning, even for people who aren't necessarily used to Keras.  There is one subtle point, though: the Embedding layer has `input_dim=vocab_size+1` because we have 3001 input tokens: our 3000 words, and our 'padding symbol' 0.
 
+```python
+model = Sequential()
+model.add(Embedding(input_dim=vocab_size+1, output_dim=64, input_length=max_length))
+model.add(LSTM(100))
+Model.add(Dense(1, activation='sigmoid')) 
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+model.fit(x_train, y_train, validation_data=(x_test, y_test), batch_size=64, epochs=3, verbose=2)
+
+loss, accuracy = model.evaluate(x_test, y_test)     # Better: split the data into train/test/validate sets
+print(accuracy)
+```
+######## .848
 
 
 
