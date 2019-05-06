@@ -237,6 +237,8 @@ In fact, after training many models on this problem, I've noticed that the set o
 We can check this setup's average performance with the following:
 
 ```python
+import random
+
 train_proportion = 0.9
 train_set_size = int(train_proportion * len(labels))
 
@@ -257,6 +259,9 @@ for i in range(10):
 print("Average accuracy across 10 models: ")
 print(accuracies/10)
 ```
+
+With total train/test size 10,000, we got an average accuracy of .791.  This is pretty good!  But let's not get too excited - the data set we used is small and it may have too many similar reviews by chance.  To be sure, we repeated the experiment with 80,000 test/train examples and got an average accuracy of 
+
 
 
 
