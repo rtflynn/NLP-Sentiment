@@ -260,7 +260,9 @@ print("Average accuracy across 10 models: ")
 print(accuracies/10)
 ```
 
-With total train/test size 10,000, we got an average accuracy of .791.  This is pretty good!  But let's not get too excited - the data set we used is small and it may have too many similar reviews by chance.  To be sure, we repeated the experiment with 80,000 test/train examples and got an average accuracy of 
+With total train/test size 10,000, we got an average accuracy of .791.  This is pretty good!  But let's not get too excited - the data set we used is small and it may have too many similar reviews by chance.  To be sure, we repeated the experiment with 80,000 test/train examples and got an average accuracy of .771.  
+
+TODO : run overnight on the entire 400,000 data points.
 
 
 
@@ -268,7 +270,53 @@ With total train/test size 10,000, we got an average accuracy of .791.  This is 
 I'd originally planned on discussing how to get nltk and scikit-learn working together --- and may do so on some future update to this project.  For now, however, let's move on to LSTM models.
 
 # Sequential Models
-Bag-of-words works better than one might expect, but blah blah etc 
+The very naive bag-of-words model worked surprisingly well, achieving close to 80% accuracy on the sentiment classification task we gave it.  Let's turn our attention to neural networks and see how they fare.
+
+We'll be using a special kind of neural network architecture known as LSTM.  LSTM stands for 'Long Short-Term Memory', and is an example of a recurrent neural network (RNN), i.e. a network which analyses data over multiple time steps.  There are many amazing LSTM tutorials out there, and this isn't one of them, so let's content ourselves with a review of the very basics:
+
+The beginning of the process is the same as before:  We tokenize our reviews into individual words, count the number of occurences of each word, and make a vocabulary out of the most common 3000 (say) words.  We build our training and test data by going through a review and keeping all words which belong to our vocabulary, but importantly this time we keep them in order (!).  
+
+We start with the following neural network:  First, there's an 'embedding' layer which does something special we'll discuss in a bit.  Next, we feed our words into an LSTM cell.  We actually feed information to an LSTM cell one letter at a time, or one word at a time, or one sentence at a time... one X at a time, where X is decided on before we create the network (the choice of X determines what the 'embedding' layer alluded to above looks like).  
+
+LSTM cells do remarkable things.  Essentially, an LSTM cell is able to remember previous data, and it's able to forget previous data (within a given training or test example).  More than this, an LSTM cell is able to decide which previous data is important to remember and which previous data is OK to forget, and it's able to learn to make this decision better and better (i.e. it makes these decisions based on internal parameters and is able to tweak these parameters to decrease a loss function).  Going back to an earlier example, an LSTM would have absolutely no trouble distinguishing the statements "Great product but the customer service was terrible" and "Terrible product but the customer service was great" from one another.
+
+A nice property of LSTM which we won't use here is that LSTM cells actually learn sequence-to-sequence mappings, meaning they're well-suited to tasks like: given a paragraph of text from a story book, list all characters mentioned in that paragraph and what they did; given a sentence with the last word omitted, predict what the last word is; translate a passage from English to French.
+
+Back to this magical 'embedding' from before:  The idea is similar to lemmatizing.  When we lemmatize the words 'great', 'greater', 'greatest', they all map to the same word, 'great'.  However, the words 'good' and 'best' are not recognized as being close in meaning to 'great' via this procedure.  An embedding layer works as follows:  We take our vocabulary (which has size 3000), and one-hot encode our individual words into it.  Now our words are sitting incredibly sparsely and quite wastefully in a 3000-dimensional space.  We map this space down to (say) a 50-dimensional space via some linear map, and we learn the parameters of this map over time via gradient descent.
+
+Note:  This isn't how Keras does it --- Keras skips the one-hot embedding and instead uses a more-efficient dictionary lookup.
+
+What makes this work is the fact that in 50-dimensional space, there's simply not enough room for each word to get its own axis.  Therefore a bunch of words need to point in similar directions, and we get more accurate models when similar words get similar direction vectors associated to them.  The directions are initialized randomly and modified over time through backpropogation, so that eventually words like 'good', 'great', and 'best' are all pointing in similar directions to one another.  
+
+This affords some other very, very nice properties --- for example, a good embedding might have "car" as an almost-linear-combination of "fast" and "vehicle", because "car" is more similar to "fast" and "vehicle" than it is to, say, "transparent" or "hamper".  This requires a little thought, but one can imagine that in a high-dimensional space, being close to two vectors means being close to the plane spanned by them.
+
+Similarly, one might take the word embedding for 'king', subtract the word embedding for 'man', add the word embedding for 'woman', and end up awfully close to the word embedding for 'queen'.  This whole topic is actually really cool and very worthy of a few afternoons on Wikipedia and YouTube.
+
+In any case, our model will look like:  Embedding Layer -->  LSTM Cell --> Single Unit (sigmoid) .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
