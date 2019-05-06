@@ -294,6 +294,61 @@ Similarly, one might take the word embedding for 'king', subtract the word embed
 
 In any case, our model will look like:  Embedding Layer -->  LSTM Cell --> Single Unit (sigmoid) .
 
+# Preparing the Features
+
+We'll need to prepare our features in a different format for Keras.  For one thing, Keras models need numpy arrays to be passed to them.  For another, since our embedding layer will take care of word similarity, we may want to revisit whether we lemmatize or not.  It may well be the case that the particular form of a word changes the meaning of the sentence it's in enough to matter, so we should experiment both with and without lemmatizing our input.
+
+Let's start from scratch.  This time we'll put all our imports up front.
+
+```python
+from keras.layers import Embedding, Dense, LSTM  #, CuDNNLSTM instead of LSTM if you've got tensorflow-gpu
+from keras.models import Sequential
+from keras.preprocessing import sequence
+import numpy as np
+from nltk.tokenize import RegexpTokenizer
+from nltk.stem import WordNetLemmatizer
+from nltk import FreqDist
+
+
+current_file = open("test.ft.txt", "rb")
+x = current_file.load()
+current_file.close()
+
+x = x.decode("utf-8")
+x = x.splitlines()
+x = x[:10000}     ### For quick iteration.  Recall this dataset has 400,000 examples.
+
+labels = []
+reviews = []
+
+for i in x:
+  separated = i.split(" ",1)
+  labels.append(separated[0])
+  reviews.append(separated[1])
+
+for i in range(len(labels)):
+  if labels[i] == '__label__1':
+    labels[i] = 'Bad'
+  elif labels[i] == '__label__2':
+    labels[i] = 'Good'
+  else:
+    print("Whoops")
+
+reTokenizer = RegexpTokenizer(r'\w+')
+all_words = []
+
+for i in range(len(reviews)):
+  tokens = reTokenizer.tokenize(reviews[i])
+  reviews[i] = []
+  for word in tokens:
+    word = word.lower()
+    all_words.append(word)
+    reviews[i].append(word)
+    
+all_words = FreqDist(all_words)
+all_words = all_words.most_common(3000)
+
+```
 
 
 
