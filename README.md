@@ -298,6 +298,8 @@ In any case, our model will look like:  Embedding Layer -->  LSTM Cell --> Singl
 
 We'll need to prepare our features in a different format for Keras.  For one thing, Keras models need numpy arrays to be passed to them.  For another, since our embedding layer will take care of word similarity, we may want to revisit whether we lemmatize or not.  It may well be the case that the particular form of a word changes the meaning of the sentence it's in enough to matter, so we should experiment both with and without lemmatizing our input.
 
+Another thing to think about:  With the bag-of-words model, all our test/train examples automatically had the same length (3000) because each example was just a binary-valued dictionary whose key set was the set of most common words.  But here, our reviews have different lengths and so our examples potentially have different lengths.  This isn't necessarily problematic but things will be easier if we prepare all inputs to be the same length (say 500).  To do this we'll cut longer inputs down to length 500, and we'll pad shorter reviews at the beginning with 0's.  We'll do this with a preprocessing module from keras called 'sequence'.  
+
 Let's start from scratch.  This time we'll put all our imports up front.
 
 ```python
@@ -309,6 +311,8 @@ from nltk.tokenize import RegexpTokenizer
 from nltk.stem import WordNetLemmatizer
 from nltk import FreqDist
 
+vocab_size = 3000
+max_length = 500
 
 current_file = open("test.ft.txt", "rb")
 x = current_file.load()
@@ -346,15 +350,37 @@ for i in range(len(reviews)):
     reviews[i].append(word)
     
 all_words = FreqDist(all_words)
-all_words = all_words.most_common(3000)
-
+all_words = all_words.most_common(vocab_size)
+for i in range(len(all_words)):
+  all_words[i] = all_words[i][0]
 ```
 
+Everything up to this point should make sense.  Thinking ahead a bit, a Keras embedding layer will take as input a numpy array of positive integers - for example \[52, 11, 641, 330, 1066, 12, 1, ..., 18\] - where the integers are essentially tokens of words.  So, we'll want a dictionary which takes distinct words to distint positive integers.  It might be helpful to have the reverse dictionary handy, both for debugging and for analysis.  
+
+```python
+word2int = {all_words[i] : i+1  for i in range(vocab_size)}   # i+1 because we want to start at 1
+int2word = {x : y  for  y, x in word2int.items()}
+dict_as_list = list(word2int)
+
+def review2intlist(review):
+  int_list = []
+  for i in review:
+    if i in word2int.keys():
+      int_list.append(word2int(i))
+  return int_list
+
+lstm_input = []
+for rev in reviews:
+  lstm_input.append(np.asarray(review2intlist(rev), dtype=int))
+lstm_input = sequence.pad_sequences(lstm_input, maxlen=max_length)
 
 
+train_proportion = 0.9
+train_set_size = int(train_proportion * len(labels))
 
-
-
+training_set = lstm_input[:train_set_size]
+testing_set = lstm_input[train_set_size:]
+```
 
 
 
