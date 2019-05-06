@@ -383,7 +383,7 @@ x_test, y_test = lstm_input[train_size:], labels[train_size:]
 
 ## Building the Model
 
-Building a Keras model is a pretty straightforward process.  We'll use the Sequential API because it's simpler we don't need the flexibility of the functional API.  Most of the following code should be easy enough to parse for meaning, even for people who aren't necessarily used to Keras.  There is one subtle point, though: the Embedding layer has `input_dim=vocab_size+1` because we have 3001 input tokens: our 3000 words, and our 'padding symbol' 0.
+Building a Keras model is a pretty straightforward process.  We'll use the Sequential API because it's simpler and we don't need the flexibility of the functional API.  Most of the following code should be easy enough to parse for meaning, even for people who aren't necessarily used to Keras.  There is one subtle point, though: the Embedding layer has `input_dim=vocab_size+1` because we have 3001 input tokens: our 3000 words, and our 'padding symbol' 0.
 
 ```python
 model = Sequential()
