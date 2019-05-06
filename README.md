@@ -230,7 +230,7 @@ classifier.show_most_informative_features(30)
 
 And there you have it.  
 
-Results will vary based on vocabulary size and number of test/train examples.  On my machine the first run gave accuracy 0.761 and most informative feature 'refund' with a 44.6 to 1 proportion of 'Bad' to 'Good'.  The next most informative features were 'publisher', 'waste', 'worst', 'zero', 'pathetic', and 'elevator', 'awful', and 'defective', all of which point toward 'Bad'.  Many of these seem correct, but publisher and elevator don't make much sense.  This is simply what happens with naive Bayes on small data sets.  The first informative feature which points towards 'Good' is 'refreshing'.  
+Results will vary based on vocabulary size and number of test/train examples.  On my machine the first run gave accuracy 0.811 and most informative feature 'refund' with a 44.6 to 1 proportion of 'Bad' to 'Good'.  The next most informative features were 'publisher', 'waste', 'worst', 'zero', 'pathetic', and 'elevator', 'awful', and 'defective', all of which point toward 'Bad'.  Many of these seem correct, but publisher and elevator don't make much sense.  This is simply what happens with naive Bayes on small data sets.  The first informative feature which points towards 'Good' is 'refreshing'.  
 
 In fact, after training many models on this problem, I've noticed that the set of informative features which point toward 'Bad' vastly outnumbers the set of features which point toward 'Good'.  This introduces its own problems to the classifier, but that's an issue for another day.
 
