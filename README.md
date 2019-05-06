@@ -286,7 +286,7 @@ Back to this magical 'embedding' from before:  The idea is similar to lemmatizin
 
 Note:  This isn't how Keras does it --- Keras skips the one-hot embedding and instead uses a more-efficient dictionary lookup.
 
-What makes this work is the fact that in 50-dimensional space, there's simply not enough room for each word to get its own axis.  Therefore a bunch of words need to point in similar directions, and we get more accurate models when similar words get similar direction vectors associated to them.  The directions are initialized randomly and modified over time through backpropogation, so that eventually words like 'good', 'great', and 'best' are all pointing in similar directions to one another.  
+What makes this work is the fact that in 50-dimensional space, there's not enough room for each word to get its own axis.  Therefore a bunch of words need to point in similar directions, and we get more accurate models when similar words get similar direction vectors associated to them.  The directions are initialized randomly and modified over time through backpropogation, so that eventually words like 'good', 'great', and 'best' are all pointing in similar directions to one another.  
 
 This affords some other very, very nice properties --- for example, a good embedding might have "car" as an almost-linear-combination of "fast" and "vehicle", because "car" is more similar to "fast" and "vehicle" than it is to, say, "transparent" or "hamper".  This requires a little thought, but one can imagine that in a high-dimensional space, being close to two vectors means being close to the plane spanned by them.
 
