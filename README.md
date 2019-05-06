@@ -205,7 +205,7 @@ def make_feature_dict(word_list):
 
 nltk_data_set = []
 for i in range(len(labels)):
-  nltk_data_set.append( (make_feature_dict(reviews[i]), labels[i] )
+  nltk_data_set.append( (make_feature_dict(reviews[i]), labels[i]) )
 
 train_proportion = 0.9
 train_set_size = int(train_proportion * len(labels))
@@ -229,6 +229,36 @@ classifier.show_most_informative_features(30)
 ```
 
 And there you have it.  
+
+Results will vary based on vocabulary size and number of test/train examples.  On my machine the first run gave accuracy 0.761 and most informative feature 'refund' with a 44.6 to 1 proportion of 'Bad' to 'Good'.  The next most informative features were 'publisher', 'waste', 'worst', 'zero', 'pathetic', and 'elevator', 'awful', and 'defective', all of which point toward 'Bad'.  Many of these seem correct, but publisher and elevator don't make much sense.  This is simply what happens with naive Bayes on small data sets.  The first informative feature which points towards 'Good' is 'refreshing'.  
+
+In fact, after training many models on this problem, I've noticed that the set of informative features which point toward 'Bad' vastly outnumbers the set of features which point toward 'Good'.  This introduces its own problems to the classifier, but that's an issue for another day.
+
+We can check this setup's average performance with the following:
+
+```python
+train_proportion = 0.9
+train_set_size = int(train_proportion * len(labels))
+
+
+accuracies = 0
+for i in range(10):
+    random.shuffle(nltk_data_set)
+
+    training_set = nltk_data_set[:train_set_size]
+    testing_set = nltk_data_set[train_set_size:]
+
+    print("Beginning classifier training...")
+    classifier = nltk.NaiveBayesClassifier.train(training_set)
+    print("Finished classifier training... its accuracy on the test set is: ")
+    print(nltk.classify.accuracy(classifier, testing_set))
+    accuracies += nltk.classify.accuracy(classifier, testing_set)
+
+print("Average accuracy across 10 models: ")
+print(accuracies/10)
+```
+
+
 
 I'd originally planned on discussing how to get nltk and scikit-learn working together --- and may do so on some future update to this project.  For now, however, let's move on to LSTM models.
 
