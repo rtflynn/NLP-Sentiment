@@ -301,7 +301,7 @@ We'll need to prepare our features in a different format for Keras.  For one thi
 Let's start from scratch.  This time we'll put all our imports up front.
 
 ```python
-from keras.layers import Embedding, Dense, LSTM  #, CuDNNLSTM instead of LSTM if you've got tensorflow-gpu
+from keras.layers import Embedding, Dense, LSTM  # CuDNNLSTM instead of LSTM if you've got tensorflow-gpu
 from keras.models import Sequential
 from keras.preprocessing import sequence
 import numpy as np
@@ -316,7 +316,7 @@ current_file.close()
 
 x = x.decode("utf-8")
 x = x.splitlines()
-x = x[:10000}     ### For quick iteration.  Recall this dataset has 400,000 examples.
+x = x[:10000]     ### For quick iteration.  Recall this dataset has 400,000 examples.
 
 labels = []
 reviews = []
