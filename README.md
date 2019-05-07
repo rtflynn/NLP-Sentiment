@@ -327,12 +327,7 @@ for i in x:
   reviews.append(separated[1])
 
 for i in range(len(labels)):
-  if labels[i] == '__label__1':
-    labels[i] = 'Bad'
-  elif labels[i] == '__label__2':
-    labels[i] = 'Good'
-  else:
-    print("Whoops")
+  labels[i] = int(labels[i] == '__label__2')
 
 reTokenizer = RegexpTokenizer(r'\w+')
 all_words = []
@@ -398,6 +393,9 @@ print(accuracy)
 
 
 
+
+Scatted remarks, move later:
+You lose a few percentage points of accuracy on all models if you forget to lowercase your words, 
 
 
 
