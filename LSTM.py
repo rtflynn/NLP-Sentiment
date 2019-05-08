@@ -1,108 +1,99 @@
 import keras
 from keras.datasets import imdb
-from keras.layers import Embedding, Dense, LSTM
+from keras.layers import Embedding, Dense, LSTM, CuDNNLSTM
 from keras import Sequential
 from keras.preprocessing import sequence
 import numpy as np
 from nltk.tokenize import word_tokenize, RegexpTokenizer
+from nltk.stem import WordNetLemmatizer
 from nltk import FreqDist
+import random
 
-
-vocab_size = 30000                 # Number of words to Embed - i.e. this determines the size of the one-hot layer
-max_length = 400                  # Max length of any review (in words).  We'll pad/cut all reviews to this length.
-train_set_proportion = 0.95       # Train/Test set proportion
-num_data_points = 20000           # How many train/test examples to use (the data set is massive)
+vocab_size = 6000                 # Number of words to Embed - i.e. this determines the size of the one-hot layer
+max_length = 500                  # Max length of any review (in words).  We'll pad/cut all reviews to this length.
+train_set_proportion = 0.9        # Train/Test set proportion
+num_data_points = 10000           # How many train/test examples to use (the data set is massive)
 embedding_size = 128              # How many dimensions to embed our words in
 
 train_size = int(num_data_points * train_set_proportion)
-batch_size = 64
+batch_size = 1024
 num_epochs = 10
 
-
-
-current_file = open("test.ft.txt", "rb")
+current_file = open("train.ft.txt", "rb")
 x = current_file.read()
 current_file.close()
 
 x = x.decode("utf-8")
 x = x.splitlines()
+random.shuffle(x)
 x = x[:num_data_points]
 labels = []
-titles = []
-texts = []
-full_reviews = []
+reviews = []
 
-tokenizer = RegexpTokenizer(r'\w+')
-# In the following:  Either use tokenizer.tokenize(i), or use sent_tokenize(i).
-# The difference is that the RegexpTokenizer throws away punctuation, and might lose some words like "Mr.".
+reTokenizer = RegexpTokenizer(r'\w+')
+lemmatizer = WordNetLemmatizer()
 for i in x:
     separated = i.split(" ", 1)
     labels.append(separated[0])
-    full_reviews.append(separated[1])
+    reviews.append(separated[1])
 
 for i in range(len(labels)):
     labels[i] = int(labels[i] == '__label__1')
-#for i in full_reviews:
-#    separated = i.split(":", 1)
-#    titles.append(separated[0])
-#    texts.append(separated[1])
+
 
 all_words = []
-for i in full_reviews:
-    for w in tokenizer.tokenize(i):
-        all_words.append(w)
-#for i in titles:
-#    for w in tokenizer.tokenize(i):
-#        all_words.append(w)
-#for i in texts:
-#    for w in tokenizer.tokenize(i):
-#        all_words.append(w)
+for i in range(len(reviews)):
+    tokens = reTokenizer.tokenize(reviews[i])
+    reviews[i] = []
+    for word in tokens:
+        word = word.lower()
+        #word = lemmatizer.lemmatize(word)
+        all_words.append(word)
+        reviews[i].append(word)
+
 
 all_words = FreqDist(all_words)
 all_words = all_words.most_common(vocab_size)
 
-word2int = {all_words[i][0]: i+1 for i in range(vocab_size)}      # i+1 to start at 1, because we're padding with 0's.
+word2int = {all_words[i][0]: i+1 for i in range(vocab_size)}
 int2word = {x: y for y, x in word2int.items()}
 dict_as_list = list(word2int)
 
 
 def review2intlist(rev_text):
     int_list = []
-    tokenized = tokenizer.tokenize(rev_text)
-    for i in tokenized:
-        if i in word2int.keys():
-            int_list.append(word2int[i])
+    for word in rev_text:
+        if word in word2int.keys():
+            int_list.append(word2int[word])
     return int_list
 
 
 X = []
-for i in full_reviews:
+for i in reviews:
     X.append(np.asarray(review2intlist(i), dtype=int))
 X = sequence.pad_sequences(X, maxlen=max_length)
 
-x_train, y_train = X[:train_size], labels[:train_size]
-x_test, y_test = X[train_size:], labels[train_size:]
+LSTM_inputs = np.zeros(shape=(max_length, num_data_points), dtype=np.float32)
+for i in range(len(X)):
+    LSTM_inputs[:, i] = X[i]
+LSTM_inputs = LSTM_inputs.T
 
-x_valid = x_train[:10*batch_size]
-y_valid = y_train[:10*batch_size]
-x_train = x_train[10*batch_size:]
-y_train = y_train[10*batch_size:]
+LSTM_outputs = np.zeros(shape=num_data_points)
+for i in range(len(labels)):
+    LSTM_outputs[i] = labels[i]
 
-print(X[0])
-print(x_train[0])
-print(y_train[0])
+x_train, y_train = LSTM_inputs[:train_size], LSTM_outputs[:train_size]
+x_test, y_test = LSTM_inputs[train_size:], LSTM_outputs[train_size:]
 
 model = Sequential()
 model.add(Embedding(input_dim=vocab_size + 1, output_dim=64, input_length=max_length))
 # The last word has index 30000 which is not in [0:30000], thus the +1 above
-model.add(LSTM(100))
+model.add(CuDNNLSTM(50))
 model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-model.fit(x_train, y_train, validation_data=(x_valid, y_valid), batch_size=batch_size, epochs=num_epochs, verbose=2)
+model.fit(x_train, y_train, validation_split=0.2, batch_size=batch_size, epochs=num_epochs, verbose=2)
 
-loss, accuracy = model.evaluate(x_test, y_test)
+loss, accuracy = model.evaluate(x_test, y_test, verbose=0)
 print(accuracy)
 
-
-#.835
