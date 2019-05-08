@@ -1,5 +1,3 @@
-import keras
-from keras.datasets import imdb
 from keras.layers import Embedding, Dense, LSTM, CuDNNLSTM
 from keras import Sequential
 from keras.preprocessing import sequence
