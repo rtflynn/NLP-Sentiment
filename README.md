@@ -47,7 +47,7 @@ len(x)
 
 
 ```python
-print(x[:100])
+print(x[:1000])
 ```
 `b'__label__2 Great CD: My lovely Pat has one of the GREAT voices of her generation. I have listened to this CD for YEARS and I still LOVE IT. When I\'m in a good mood it makes me feel better. A bad mood just evaporates like sugar in the rain. This CD just oozes LIFE. Vocals are jusat STUUNNING and lyrics just kill. One of life\'s hidden gems. This is a desert isle CD in my book. Why she never made it big is just beyond me. Everytime I play this, no matter black, white, young, old, male, female EVERYBODY says one thing "Who was that singing ?"\n__label__2 One of the best game music soundtracks - for a game I didn\'t really play: Despite the fact that I have only played a small portion of the game, the music I heard (plus the connection to Chrono Trigger which was great as well) led me to purchase the soundtrack, and it remains one of my favorite albums. There is an incredible mix of fun, epic, and emotional songs. Those sad and beautiful tracks I especially like, as there\'s not too many of th'`
 
@@ -407,7 +407,7 @@ It looks like there is some upside to increasing the number of units, but we sho
 
 ## Improving the Model
 
-The previous computations would take a pretty long time on a CPU.  I ran all this on a GPU but at any given time the computation only used about 4% of GPU power.  We've also hit the wall on the number of training examples we can store in memory.  Thankfully there's a way to hit two birds with one stone here, and that's what we'll discuss next.
+The previous computations would take a pretty long time on a CPU.  I ran all this on a GPU but at any given time the computation only used about 4% of GPU power.  We've also hit the wall on the number of training examples we can store in memory --- train.ft.txt contains 3,600,000 examples and test.ft.txt contains 400,000, so if we use these as our train/test set, we should be able to improve our model a bit more.  Thankfully there's a way to hit two birds with one stone here, and that's what we'll discuss next.
 
 
 
