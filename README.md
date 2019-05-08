@@ -388,7 +388,26 @@ model.fit(x_train, y_train, validation_data=(x_test, y_test), batch_size=64, epo
 loss, accuracy = model.evaluate(x_test, y_test)     # Better: split the data into train/test/validate sets
 print(accuracy)
 ```
-######## .848
+
+This model achieves an accuracy of .848.  This is already better than a bag-of-words model trained on 100,000 data points, and we've only used 10,000 here.  One of the most well-known principles regarding neural networks is that they seem to improve, across the board, with more data.  I've gone ahead and trained models on larger data sets and found the following accuracies (in the following, the number given is the total size of the train/test/validation sets combined, and we've switched out "test.ft.txt" for "train.ft.txt" because the former 'only' has 400,000 examples):
+
+400,000 examples:  accuracy .92525
+800,000 examples:  accuracy .9353
+1,600,000 examples:  accuracy .9444
+2,500,000 examples:  accuracy .9469
+
+After this point the computation takes too much memory to fit in RAM.  I decided to train models with more LSTM hidden units and 2,500,000 examples to the following results:
+
+200 LSTM units:  accuracy .9498
+300 LSTM units:  accuracy .9502
+400 LSTM units:  accuracy .9493
+
+It looks like there is some upside to increasing the number of units, but we should always be careful not to use too many as we want to avoid overfitting.  There's also the practical issue that if we want to someday deploy this model, fewer units is better since it takes less space to store the neural network and fewer operations to evaluate.  Just to check, I trained a model with 50 hidden LSTM units and got an accuracy of .9454.  So there's definitely a case to be made for using smaller networks.
+
+
+## Improving the Model
+
+The previous computations would take a pretty long time on a CPU.  I ran all this on a GPU but at any given time the computation only used about 4% of GPU power.  We've also hit the wall on the number of training examples we can store in memory.  Thankfully there's a way to hit two birds with one stone here, and that's what we'll discuss next.
 
 
 
