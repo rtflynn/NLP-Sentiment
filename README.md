@@ -397,7 +397,7 @@ loss, accuracy = model.evaluate(x_test, y_test)     # Better: split the data int
 print(accuracy)
 ```
 
-This model achieves an accuracy of .848.  This is already better than a bag-of-words model trained on 100,000 data points, and we've only used 10,000 here.  One of the most well-known principles regarding neural networks is that they seem to improve, across the board, with more data.  I've gone ahead and trained models on larger data sets and found the following accuracies (in the following, the number given is the total size of the train/test/validation sets combined, and we've switched out "test.ft.txt" for "train.ft.txt" because the former 'only' has 400,000 examples):
+This model achieves an accuracy of .848.  This is already better than a bag-of-words model trained on 160,000 data points, and we've only used 10,000 here.  One of the most well-known principles regarding neural networks is that they seem to improve, across the board, with more data.  I've gone ahead and trained models on larger data sets and found the following accuracies (in the following, the number given is the total size of the train/test/validation sets combined, and we've switched out "test.ft.txt" for "train.ft.txt" because the former 'only' has 400,000 examples):
 
 400,000 examples:  accuracy .92525
 
