@@ -1,5 +1,7 @@
 # Amazon Review Sentiment Analysis
 
+(Temporary while still writing this project --- REMOVE AFTER:  Current record ~ .95 accuracy)
+
 Sentiment analysis has been on the rise - both because of the availability of new analysis techniques in deep learning, and because there is an incomprehensibly large amount of data being generated everywhere.  Every product review, every tweet, every reddit post, etc, contains subjective information which we'd like to be able to process and understand.  
 
 For example, say you're Netflix.  Then you're very interested in what your customers have to say about your service and your TV show/movie selection, and you might look toward mining facebook posts and tweets and IMDB reviews and so on to gauge public opinion.  If you're a politician, then you're interested (hopefully) in what your constituents are thinking, what they want, what set of values they hold dear, etc, and so you might have a team which analyzes public sentiment in these areas.  If you're an entrepreneur, then you're interested in public opinion as it concerns your niche, your product, and your competition, since this allows you to make more informed decisions moving forward.
