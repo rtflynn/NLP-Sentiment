@@ -1,6 +1,7 @@
 # Amazon Review Sentiment Analysis
 
 (Temporary while still writing this project --- REMOVE AFTER:  Current record ~ .95 accuracy, 5/7/2019)
+
 (All questions, comments, corrections VERY welcome while this is being written.  Just raise an issue,)
 
 
