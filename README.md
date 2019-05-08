@@ -1,6 +1,6 @@
 # Amazon Review Sentiment Analysis
 
-(Temporary while still writing this project --- REMOVE AFTER:  Current record ~ .95 accuracy)
+(Temporary while still writing this project --- REMOVE AFTER:  Current record ~ .95 accuracy, 5/7/2019)
 
 Sentiment analysis has been on the rise - both because of the availability of new analysis techniques in deep learning, and because there is an incomprehensibly large amount of data being generated everywhere.  Every product review, every tweet, every reddit post, etc, contains subjective information which we'd like to be able to process and understand.  
 
