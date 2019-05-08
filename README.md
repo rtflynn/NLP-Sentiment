@@ -417,6 +417,7 @@ It looks like there is some upside to increasing the number of units, but we sho
 
 The previous computations would take a pretty long time on a CPU.  I ran all this on a GPU but at any given time the computation only used about 4% of GPU power.  We've also hit the wall on the number of training examples we can store in memory --- train.ft.txt contains 3,600,000 examples and test.ft.txt contains 400,000, so if we use these as our train/test set, we should be able to improve our model a bit more.  Thankfully there's a way to hit two birds with one stone here, and that's what we'll discuss next.
 
+But first, this whole thing is getting rather large.  It will be useful to refactor this code into several .py files to keep it modular and manageable.  I'll do this without listing all the code here - rather, you'll be able to find the refactored version in the folder 'Improved LSTM'.  Once again for anyone who's cloning this, you'll want to add test.ft.txt and train.ft.txt to this folder, or change the paths in the .py files to wherever your test and train data are sitting.
 
 
 
