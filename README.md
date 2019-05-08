@@ -167,11 +167,14 @@ Better.  Let's use this.  Finally, we need to collect all the words from all the
 
 ```python
 all_words = []
-for review in reviews:
-  for word in reTokenizer.tokenize(review):
-    lowercase = word.lower()
-    lemmatized = lemmatizer.lemmatize( lowercase )
-    all_words.append(lemmatized)
+for i in range(len(reviews)):
+  tokens = reTokenizer.tokenize(reviews[i])
+  reviews[i] = []
+  for word in tokens:
+    word = word.lower
+    word = lemmatizer.lemmatize(word)
+    all_words.append(word)
+    reviews[i].append(word)
 ```
 
 All our words are in the list `all_words`.  NLTK conveniently provides functionality for extracting the most common words from a list.
