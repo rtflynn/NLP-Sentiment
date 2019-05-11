@@ -459,7 +459,13 @@ params = {'vocab_size': [3000, 6000, 9000], 'max_length': [300, 500, 800], 'num_
                   'multiple_LSTM_layers': [False, True], 'lr': [0.001, .01, .1, 1, 10]}
 ```
 
-(2) Slightly alter the code which builds our model.  As an example, we change `model.add(Embedding(input_dim=vocab_size + 1, output_dim=embedding_size, input_length=max_length))`  to  `model.add(Embedding(input_dim=params['vocab_size'] + 1, output_dim=params['embedding_size'], input_length=params['max_length']))`.
+(2) Slightly alter the code which builds our model.  As an example, we change 
+
+`model.add(Embedding(input_dim=vocab_size + 1, output_dim=embedding_size, input_length=max_length))` 
+
+to 
+
+`model.add(Embedding(input_dim=params['vocab_size'] + 1, output_dim=params['embedding_size'], input_length=params['max_length']))`.
 
 Finally, call the `Talos.Scan()` method on the newly-written model.  It will scan through all possibilities (or a user-provided proportion of them, chosen randomly) and output training results to a .csv file.  
 
