@@ -431,7 +431,8 @@ Here's a brief list of the changes:
  - Added a separate pair of files to take care of Talos hyperparameter search
  - Kept the LSTM in the main 'LSTM.py' file, and altered how it runs to take advantage of 'generators'
 
-In more detail:
+## model.fit_generator()
+
 Keras provides an alternative method to `model.fit(args)` which goes by `model.fit_generator(args)`.  The main difference is that with `model.fit(x_train, y_train, ...)`, we have to provide the training set all at once, and the training set must fit in memory.  fit_generator, on the other hand, takes in a so-called data generator, which is an object of class keras.utils.Sequence that implements a `__getitem__(index)` method whose job it is to return the index'th training batch in a training set.  With this done, we can train our model via `model.fit_generator(generator=myGenerator, workers=4, use_multiprocessing=True, ...)`.  
 
 The generator feeds in the training data as it's needed; in particular we don't need to hold the entire training set in memory at once.  An added bonus comes with the second and third arguments of `fit_generator`:  the `use_multiprocessing` flag allows us to spawn several generators on distinct threads, and `workers` dictates how many threads to use.  This allows us to push more data to our GPU in the case that the CPU is the bottleneck.
@@ -440,10 +441,52 @@ For my implementation of a generator, I decided to simply pre-generate all the t
 
 I got around this by having my data preparation method first check a boolean to see whether data prep has been done already, and to `pass` if it has already been completed.  Before even defining the model I prepare the data so that in the first epoch we don't run out of memory.  After defining the model, Keras still tries to create the training set 80 times, but each time stops as soon as it hits the boolean flag.  
 
+A quick warning to anyone cloning and running this repo:  Each distinct choice of `(batch_size, vocab_size, max_length)` causes the data preparation module to create a new directory on disk and populate it with the relevant data.  This can get out of hand quickly so be careful.
 
-Scatted remarks, move later:
-You lose a few percentage points of accuracy on all models if you forget to lowercase your words, 
+## Talos and Hyperparameter Search
 
+The previous improvements allowed for much quicker iteration through different model sizes and architectures, but each training run had to be set up 'by hand' - i.e. we'd have to go in and change vocab_size or num_LSTM_units manually and train the model again to see whether it does better or worse than before.  Luckily there are some nice python modules out there which automate this task to an extent.  I decided to go with 'Talos'.  Installation is simple:  `pip install talos` or `conda install talos`.
+
+Since this isn't a tutorial, I won't go through how to use Talos, except to note that it's very easy to pick up.  We only have to do two things:  
+
+(1) Create a python dictionary which contains the various hyperparameter options we want to try out:
+```python
+params = {'vocab_size': [3000, 6000, 9000], 'max_length': [300, 500, 800], 'num_data_points': [100000],
+                  'embedding_size': [64, 128, 256], 'batch_size': [128, 256, 512], 'optimizer': [Adam, Nadam],
+                  'loss': [binary_crossentropy, categorical_hinge, mean_squared_error], 'num_units': [50, 100, 200], 
+                  'multiple_LSTM_layers': [False, True], 'lr': [0.001, .01, .1, 1, 10]}
+```
+
+(2) Slightly alter the code which builds our model.  As an example, we change `model.add(Embedding(input_dim=vocab_size + 1, output_dim=embedding_size, input_length=max_length))`  to  `model.add(Embedding(input_dim=params['vocab_size'] + 1, output_dim=params['embedding_size'], input_length=params['max_length']))`.
+
+Finally, call the `Talos.Scan()` method on the newly-written model.  It will scan through all possibilities (or a user-provided proportion of them, chosen randomly) and output training results to a .csv file.  
+
+One downside is that (it seems) Talos doesn't play nice with `fit_generator`, so I had to use `model.fit()` and pass in the entire training set at once.  I ran this overnight on a training set of size 100,000 and found the following about our models:
+
+ - larger values of max_length and vocab_size improve model performance (on the validation set, here and in the following)
+ - large embedding sizes actually decrease performance.  This makes some sense: we want the embedding space to be small enough to force similar words to stick together.
+ - large batch sizes also decrease performance.  Granted, we only tested batch_sizes of 128, 256, and 512.  If we tested smaller batch sizes as well, we'd likely find a reasonable, medium-sized batch size works best.
+ - More LSTM units and additional LSTM layers help performance.  
+ - It doesn't seem to make a difference whether we use Adam or Nadam.
+ - TO DO:  rerun to see which works best between loss functions.  Accidentally only ran it with binary_crossentropy the first time!  Although mean_squared_error is almost guaranteed to have abysmal performance, categorical_hinge might work nicely.
+ 
+
+This Talos search was not exhaustive --- it only went through one one-hundredth of all possible combinations of the hyperparameters we fed it, and this took several hours.  But it was still worthwhile.  If we wanted, we could make changes to our `params` dictionary to reflect what we discovered and try to zero-in a bit more closely to an optimal set of hyperparameters.  At this level we can also change the proportion of combinations to try from .01 to .1.  Care must be taken, however, not to 'overfit to the validation set'.  That is, some models will by chance do better on the validation set, even though they're not actually better at the classification task.  For this reason it's good to have a separate test set hidden away somewhere, and it's also not a bad idea to stop the hyperparameter search after one or two iterations of this entire process.
+ 
+## Pulling Everything Together
+
+We've gotten a good set of hyperparameters for our Amazon Review Sentiment Classifier, but this was only trained on 100,000 data points.  It's time to see how it does when trained on the entire training set (using fit_generator and multiple cores + GPU).  
+
+The final architecture we're going with (which we found with help from Talos) is:
+
+```python
+
+TODO:  Update
+```
+
+And after training for XXXX epochs, the test loss/accuracy are  XXXX.
+
+UPDATE after the current Talos scan has completed!
 
 
 
