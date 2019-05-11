@@ -473,7 +473,7 @@ One downside is that (it seems) Talos doesn't play nice with `fit_generator`, so
 
 This Talos search was not exhaustive --- it only went through one one-hundredth of all possible combinations of the hyperparameters we fed it, and this took several hours.  But it was still worthwhile.  If we wanted, we could make changes to our `params` dictionary to reflect what we discovered and try to zero-in a bit more closely to an optimal set of hyperparameters.  At this level we can also change the proportion of combinations to try from .01 to .1.  Care must be taken, however, not to 'overfit to the validation set'.  That is, some models will by chance do better on the validation set, even though they're not actually better at the classification task.  For this reason it's good to have a separate test set hidden away somewhere, and it's also not a bad idea to stop the hyperparameter search after one or two iterations of this entire process.
  
-## Pulling Everything Together
+# Pulling Everything Together
 
 We've gotten a good set of hyperparameters for our Amazon Review Sentiment Classifier, but this was only trained on 100,000 data points.  It's time to see how it does when trained on the entire training set (using fit_generator and multiple cores + GPU).  
 
