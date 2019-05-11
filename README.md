@@ -447,7 +447,7 @@ A quick warning to anyone cloning and running this repo:  Each distinct choice o
 
 ## Talos and Hyperparameter Search
 
-The previous improvements allowed for much quicker iteration through different model sizes and architectures, but each training run had to be set up 'by hand' - i.e. we'd have to go in and change vocab_size or num_LSTM_units manually and train the model again to see whether it does better or worse than before.  Luckily there are some nice python modules out there which automate this task to an extent.  I decided to go with 'Talos'.  Installation is simple:  `pip install talos` or `conda install talos`.
+The previous improvements allowed for much quicker iteration through different model sizes and architectures, but each training run had to be set up 'by hand' - i.e. we'd have to go in and change `vocab_size` or `num_units` manually and train the model again to see whether it does better or worse than before.  Luckily there are some nice python modules out there which automate this task to an extent.  I decided to go with 'Talos'.  Installation is simple:  `pip install talos` or `conda install talos`.
 
 Since this isn't a tutorial, I won't go through how to use Talos, except to note that it's very easy to pick up.  We only have to do two things:  
 
