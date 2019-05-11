@@ -424,7 +424,21 @@ The previous computations would take a pretty long time on a CPU.  I ran all thi
 
 But first, this whole thing is getting rather large.  It will be useful to refactor this code into several .py files to keep it modular and manageable.  I'll do this without listing all the code here - rather, you'll be able to find the refactored version in the folder 'Improved LSTM'.  Once again for anyone who's cloning this, you'll want to add test.ft.txt and train.ft.txt to this folder, or change the paths in the .py files to wherever your test and train data are sitting.
 
+Here's a brief list of the changes:  
+ - Move the data preparation to another file
+ - Add a file for the building of 'generators'
+ - Add a file for a 'shutup' module whose purpose is to squelch all the tensorflow announcements which appear in the terminal
+ - Added a separate pair of files to take care of Talos hyperparameter search
+ - Kept the LSTM in the main 'LSTM.py' file, and altered how it runs to take advantage of 'generators'
 
+In more detail:
+Keras provides an alternative method to `model.fit(args)` which goes by `model.fit_generator(args)`.  The main difference is that with `model.fit(x_train, y_train, ...)`, we have to provide the training set all at once, and the training set must fit in memory.  fit_generator, on the other hand, takes in a so-called data generator, which is an object of class keras.utils.Sequence that implements a `__getitem__(index)` method whose job it is to return the index'th training batch in a training set.  With this done, we can train our model via `model.fit_generator(generator=myGenerator, workers=4, use_multiprocessing=True, ...)`.  
+
+The generator feeds in the training data as it's needed; in particular we don't need to hold the entire training set in memory at once.  An added bonus comes with the second and third arguments of `fit_generator`:  the `use_multiprocessing` flag allows us to spawn several generators on distinct threads, and `workers` dictates how many threads to use.  This allows us to push more data to our GPU in the case that the CPU is the bottleneck.
+
+For my implementation of a generator, I decided to simply pre-generate all the training/testing data as we've done before and to save it to disk in numpy files, each containing batch_size training examples.  This is expensive on disk space but allows for very quick iteration through different models, especially because when using a large portion of the data set, data preparation takes a nontrivial amount of time.  Oddly enough, when using `workers > 1`, each thread tries to generate all the data from scratch, and it does so every epoch!  So if I try to train a model with 8 workers and 10 epochs, it will try to prepare our data 80 times!  This runs significantly slower than using plain-old `model.fit()` AND uses all system memory by the time the second or third thread has started data preparation.
+
+I got around this by having my data preparation method first check a boolean to see whether data prep has been done already, and to `pass` if it has already been completed.  Before even defining the model I prepare the data so that in the first epoch we don't run out of memory.  After defining the model, Keras still tries to create the training set 80 times, but each time stops as soon as it hits the boolean flag.  
 
 
 Scatted remarks, move later:
