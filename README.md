@@ -23,7 +23,9 @@ We'll be covering the following topics in varied amounts of detail:
   - "Old-fashioned" NLP techniques  (don't be fooled - these are still used today!)
   - Building and training models using Scikit-Learn
   - RNN (specifically, LSTM)
+  - Word embeddings
   - Building and training models using Keras
+  - Multithreading using fit_generator
   - Hyperparameter searching using Talos
  
  
